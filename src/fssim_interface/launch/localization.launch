@@ -1,0 +1,29 @@
+<launch>
+
+    <node pkg="robot_localization" type="ekf_localization_node"
+        name="robot_localization_ekf_node_map" clear_params="true">
+        <param name="frequency" value="10" />  
+        <param name="sensor_timeout" value="0.2" />  
+        <param name="two_d_mode" value="true" />
+        <param name="publish_tf" value="true" />
+        <param name="odom0" value="/odom" />
+        <rosparam param="odom0_config">
+        <!-- 
+            x, y, z, 
+            roll, pitch, yaw,
+            vx, vy, vz, 
+            vroll, vpitch, vyaw,
+            ax, ay, az 
+        -->
+        [
+            true, true, false,
+            false, false, true,
+            true, true, false,
+            false, false, true,
+            false, false, false
+        ]
+        </rosparam>
+        <!-- <remap from="odometry/filtered" to="odometry/filtered_map"/> -->
+    </node>
+
+</launch>

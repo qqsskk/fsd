@@ -37,4 +37,7 @@ fsd:
   tf:
     origin: "/map"
     fsd_car_base_link: "/gotthard/base_link"
+    odom_frame: map
+    odom_child_frame: map
+    tf_odom_frame: false
     publish_car_base_link: true
