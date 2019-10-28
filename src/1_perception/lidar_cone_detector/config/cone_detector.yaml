@@ -1,4 +1,6 @@
 
 cone_detections_topic_name: /perception/lidar/cone_detections
+cone_detections_topic_name_2: /cones
+lidar_topic_name: /lidar/cones
 
 node_rate: 1   # [Herz]

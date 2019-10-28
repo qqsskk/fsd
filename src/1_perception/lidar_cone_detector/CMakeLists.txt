@@ -13,6 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   fsd_common_msgs
+  pcl_conversions
+  pcl_ros
+  fs_msgs
   )
 
 catkin_package(
@@ -26,6 +29,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${roscpp_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
 
 # Each node in the package must be declared like this
@@ -36,4 +40,5 @@ add_executable(${PROJECT_NAME}
   )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
   )

@@ -11,10 +11,13 @@
 
   <!--For custom message import-->
   <depend>fsd_common_msgs</depend>
+  <depend>fs_msgs</depend>
 
   <!--Other depends-->
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
+  <depend>pcl</depend>
+  <depend>pcl_conversions</depend>
 
   <export>
   </export>

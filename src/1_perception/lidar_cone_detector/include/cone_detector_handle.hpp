@@ -22,6 +22,8 @@
 
 #include "fsd_common_msgs/ConeDetections.h"
 #include "cone_detector.hpp"
+#include "sensor_msgs/PointCloud2.h"
+
 
 namespace ns_cone_detector {
 
@@ -45,12 +47,19 @@ class ConeDetectorHandle {
  private:
   ros::NodeHandle nodeHandle_;
   ros::Publisher coneDetectionsPublisher;
+  ros::Publisher coneDetectionsPublisher2;
 
   std::string cone_detections_topic_name_;
+  std::string cone_detections_topic_name_2_;
   int node_rate_;
 
   ConeDetector coneDetector_;
   fsd_common_msgs::ConeDetections cone_detections_;
+
+  ros::Subscriber lidarSubscriber;
+  std::string lidar_topic_name_;
+  void callbackRawLidar(const sensor_msgs::PointCloud2 &msg);
+  fs_msgs::Cones cones_msg_;
 };
 }
 
