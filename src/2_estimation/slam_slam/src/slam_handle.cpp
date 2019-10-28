@@ -90,6 +90,7 @@ void SlamHandle::run() {
 }
 
 void SlamHandle::sendMap() {
+  // TODO: cone_yellow
   slam_map_.cone_blue = slam_.getMap();
   slam_map_.header.stamp = ros::Time::now();
   slamMapPublisher_.publish(slam_map_);
