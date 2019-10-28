@@ -25,6 +25,7 @@ cmake-build-release/*
 clion/
 clion-cmake/
 clion-cmake/*
+.vscode
 
 # Catkin stuff
 .catkin_tools/*
