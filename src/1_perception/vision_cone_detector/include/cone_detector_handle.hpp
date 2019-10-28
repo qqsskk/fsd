@@ -21,7 +21,9 @@
 #define PERCEPTION_VISION_CONE_DETECTOR_HANDLE_HPP
 
 #include "fsd_common_msgs/ConeDetections.h"
+#include "sensor_msgs/PointCloud2.h"
 #include "cone_detector.hpp"
+#include "ros/ros.h"
 
 namespace ns_cone_detector {
 
@@ -31,7 +33,7 @@ class ConeDetectorHandle {
   // Constructor
   ConeDetectorHandle(ros::NodeHandle &nodeHandle);
 
-//  // Getters
+  // Getters
   int getNodeRate() const;
 
   // Methods
@@ -40,17 +42,24 @@ class ConeDetectorHandle {
   void publishToTopics();
   void run();
   void sendConeDetections();
-//  void sendVisualization();
+  // void sendVisualization();
 
  private:
   ros::NodeHandle nodeHandle_;
   ros::Publisher coneDetectionsPublisher;
 
   std::string cone_detections_topic_name_;
+  std::string camera_topic_name_;
   int node_rate_;
 
   ConeDetector coneDetector_;
   fsd_common_msgs::ConeDetections cone_detections_;
+
+  ros::Subscriber cameraSubscriber_;
+  static ros::Subscriber sub_fsd_car_command;
+
+  sensor_msgs::PointCloud2 camera_point_cloud_;
+  void callbackRawCamera(const sensor_msgs::PointCloud2 &msg);
 };
 }
 

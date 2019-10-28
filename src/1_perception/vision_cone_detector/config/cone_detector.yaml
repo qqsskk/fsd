@@ -1,4 +1,5 @@
 
 cone_detections_topic_name: /perception/vision/cone_detections
+camera_topic: /camera/cones
 
 node_rate: 1   # [Herz]

@@ -20,30 +20,38 @@
 #include <ros/ros.h>
 #include "cone_detector.hpp"
 #include <sstream>
+#include "sensor_msgs/PointField.h"
 
 namespace ns_cone_detector {
-    // Constructor
-    ConeDetector::ConeDetector() {
-    };
+  // Constructor
+  ConeDetector::ConeDetector() {
+  };
 
-    // Getters
-    fsd_common_msgs::ConeDetections ConeDetector::getConeDetections() const { return coneDetections_;}
+  // Getters
+  fsd_common_msgs::ConeDetections ConeDetector::getConeDetections() const { return coneDetections_;}
 
-    void ConeDetector::runAlgorithm() {
-      createConeDetections();
+  void ConeDetector::runAlgorithm(const sensor_msgs::PointCloud2 &camera_point_cloud_) {
+    createConeDetections(camera_point_cloud_);
+  }
+
+  void ConeDetector::createConeDetections(const sensor_msgs::PointCloud2 &camera_point_cloud_) {
+    std::vector<fsd_common_msgs::Cone> cones;
+    fsd_common_msgs::Cone cone;
+
+    auto fields = camera_point_cloud_.fields;
+    auto points = camera_point_cloud_.data;
+
+    for (auto &f: fields) {
+
+    }    
+
+    // Create 3 random blue cones
+    for (int i = 0; i < 3; i++) {
+      cone.position.x = 10 * ((double) rand() / (RAND_MAX));
+      cone.position.y = 10 * ((double) rand() / (RAND_MAX));
+      cone.color.data = "b";
+      cones.push_back(cone);
     }
-
-    void ConeDetector::createConeDetections() {
-      std::vector<fsd_common_msgs::Cone> cones;
-      fsd_common_msgs::Cone cone;
-      // Create 3 random blue cones
-      for (int i = 0; i < 3; i++) {
-        cone.position.x = 10 * ((double) rand() / (RAND_MAX));
-        cone.position.y = 10 * ((double) rand() / (RAND_MAX));
-        cone.color.data = "b";
-        cones.push_back(cone);
-      }
-      coneDetections_.cone_detections = cones;
-    }
-
+    coneDetections_.cone_detections = cones;
+  }
 }

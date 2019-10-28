@@ -23,6 +23,8 @@
 #include "fsd_common_msgs/ConeDetections.h"
 #include "geometry_msgs/Point.h"
 #include "std_msgs/String.h"
+#include "sensor_msgs/PointCloud2.h"
+
 
 namespace ns_cone_detector {
 
@@ -38,16 +40,17 @@ namespace ns_cone_detector {
         /**
          *  creates the cone detections
          */
-        void createConeDetections();
+        void createConeDetections(const sensor_msgs::PointCloud2 &camera_point_cloud_);
 
         /**
          * calls the other functions in the right order
          */
-        void runAlgorithm();
+        void runAlgorithm(const sensor_msgs::PointCloud2 &camera_point_cloud_);
 
     private:
-
+    
       fsd_common_msgs::ConeDetections coneDetections_;
+
     };
 }
 
