@@ -1,0 +1,12 @@
+<launch>
+
+  <node name="navigation_controller" pkg="mpc" type="run_loop.py" output="screen" >
+	<rosparam command="load" file="$(find mpc)/config/gazebo.yaml"/>
+    <remap from="~odom" to="/odom" />
+    <remap from="~path" to="/path" />
+    <remap from="~control_output" to="/robot_control/command" />
+  </node>
+
+  <include file="$(find fssim_interface)/launch/path_planner.launch"></include>
+
+</launch>
