@@ -1,0 +1,10 @@
+<launch>
+
+    <include file="$(find path_planner)/launch/run_planner.launch">
+        <arg name="simulation" value="fssim"/>
+        <arg name="path" value="/path"/>
+        <arg name="cones" value="/cones"/>
+        <arg name="odom" value="/odom"/>
+    </include>
+
+</launch>
