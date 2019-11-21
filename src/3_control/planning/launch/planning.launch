@@ -1,0 +1,6 @@
+<launch>
+    <node name="control_planning_node" pkg="planning" type="planning" output="screen">
+        <!-- TODO: create config -->
+        <!-- <rosparam command="load" file="$(find planning)/config/planning.yaml" />  -->
+    </node>
+</launch>

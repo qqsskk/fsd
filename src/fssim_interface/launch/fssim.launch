@@ -1,5 +1,7 @@
 <launch>
 
+    <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="testing" args="0 0 0 0 0 0 1 /fssim_map /odom"/> -->
+
     <param name="use_sim_time" value="true"/>
     <arg name="fssim_config" default="$(find fssim_interface)/fssim_config/local_simulation.yaml"/>
 

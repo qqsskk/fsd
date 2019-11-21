@@ -34,7 +34,8 @@ find_package(catkin REQUIRED COMPONENTS
         nav_msgs
         tf
         fsd_common_msgs
-        fssim_common)
+        fssim_common
+        fs_msgs)
 
 catkin_package()
 

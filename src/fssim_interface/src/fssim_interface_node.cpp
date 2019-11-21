@@ -31,6 +31,8 @@
 #include "interface.hpp"
 
 #include "nav_msgs/Odometry.h"
+#include <fs_msgs/Cones.h>
+
 
 // FSSIM
 static ros::Subscriber sub_fssim_odom;
@@ -58,6 +60,11 @@ static std::string              odom_frame;
 static std::string              odom_child_frame;
 static tf::TransformBroadcaster *br = nullptr;
 
+ros::Time current_time, last_time;
+double x = 0.0;
+double y = 0.0;
+double th = 0.0;
+
 void callbackFssimOdom(const fssim_common::State::ConstPtr &msg) {
     pub_fsd_vel.publish(gotthard::getStateDt(*msg));
     pub_fsd_state.publish(gotthard::getState(*msg));
@@ -73,41 +80,62 @@ void callbackFssimOdom(const fssim_common::State::ConstPtr &msg) {
 
     fsd_common_msgs::CarState state = gotthard::getState(*msg);
     fsd_common_msgs::CarStateDt state_dt = gotthard::getStateDt(*msg);
-    
-    // ************************************* ODOM BUILDING
-    // TODO: 1) FRAMES ??; 
-    nav_msgs::Odometry odom; 
 
-    // POSE
-    odom.header.stamp = ros::Time::now();
-    odom.header.frame_id = odom_frame; // pose frame ?
-    odom.pose.pose.position.x = state.car_state.x;
-    odom.pose.pose.position.y = state.car_state.y;
-    odom.pose.pose.position.z = 0.0;
+    double vx = state_dt.car_state_dt.x;
+    double vy = state_dt.car_state_dt.y;
+    double vth = state_dt.car_state_dt.theta;
 
-    // TWIST
-    tf::Quaternion orientation;
-    orientation.setRPY(0, 0, state.car_state.theta);
-    geometry_msgs::Quaternion quat_msg;
-    tf::quaternionTFToMsg(orientation, quat_msg);
-    
-    odom.child_frame_id = odom_child_frame; // twist frame ?
-    odom.pose.pose.orientation = quat_msg;
-    odom.twist.twist.linear.x = state_dt.car_state_dt.x;
-    odom.twist.twist.linear.y = state_dt.car_state_dt.y;
-    odom.twist.twist.angular.z = state_dt.car_state_dt.theta;
-    // ************************************* ODOM BUILDING
+    current_time = ros::Time::now();
+
+    //compute odometry in a typical way given the velocities of the robot
+    double dt = (current_time - last_time).toSec();
+    double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
+    double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
+    double delta_th = vth * dt;
+
+    x += delta_x;
+    y += delta_y;
+    th += delta_th;
+
+    //since all odometry is 6DOF we'll need a quaternion created from yaw
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 
     if (tf_odom_frame) {
-        tf::Transform transform;
-        transform.setOrigin(tf::Vector3(state.car_state.x, state.car_state.y, 0.0));
-        tf::Quaternion q;
-        q.setRPY(0, 0, state.car_state.theta);
-        transform.setRotation(q);
-        br->sendTransform(tf::StampedTransform(transform, odom.header.stamp, fsd_vehicle, odom_frame));
+        //first, we'll publish the transform over tf
+        geometry_msgs::TransformStamped odom_trans;
+        odom_trans.header.stamp = current_time;
+        odom_trans.header.frame_id = odom_frame;
+        odom_trans.child_frame_id = fsd_vehicle;
+
+        odom_trans.transform.translation.x = x;
+        odom_trans.transform.translation.y = y;
+        odom_trans.transform.translation.z = 0.0;
+        odom_trans.transform.rotation = odom_quat;
+
+        //send the transform
+        br->sendTransform(odom_trans);
     }
 
+    //next, we'll publish the odometry message over ROS
+    nav_msgs::Odometry odom;
+    odom.header.stamp = current_time;
+    odom.header.frame_id = odom_frame;
+
+    //set the position
+    odom.pose.pose.position.x = x;
+    odom.pose.pose.position.y = y;
+    odom.pose.pose.position.z = 0.0;
+    odom.pose.pose.orientation = odom_quat;
+
+    //set the velocity
+    odom.child_frame_id = fsd_vehicle;
+    odom.twist.twist.linear.x = vx;
+    odom.twist.twist.linear.y = vy;
+    odom.twist.twist.angular.z = vth;
+
     pub_raw_odom_.publish(odom);
+
+    last_time = current_time;
 }
 
 void callbackFssimTrack(const fssim_common::Track::ConstPtr &msg) {
@@ -143,6 +171,10 @@ int main(int argc, char **argv) {
     pub_fsd_vel   = n.advertise<fsd_common_msgs::CarStateDt>(getParam<std::string>(n, "fsd/vel"), 1);
     pub_fsd_state = n.advertise<fsd_common_msgs::CarState>(getParam<std::string>(n, "fsd/state"), 1);
     pub_fsd_map   = n.advertise<fsd_common_msgs::Map>(getParam<std::string>(n, "fsd/map"), 1, true);
+
+    last_time = ros::Time::now();
+    current_time = ros::Time::now();
+
     pub_raw_odom_ = n.advertise<nav_msgs::Odometry>("/odom", 1);
 
     sub_fssim_odom  = n.subscribe(getParam<std::string>(n, "fssim/topic_odom"), 1, callbackFssimOdom);

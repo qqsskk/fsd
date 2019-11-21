@@ -196,6 +196,7 @@ class AutomatedRes:
 
             # Check if all 4 wheels are inside of track and print warning if not
             is_inside_of_track = self.track_checks.is_car_in_track()
+            # is_inside_of_track = True
 
             if not is_inside_of_track:
                 rospy.logwarn("Car Is not in the track")
