@@ -23,6 +23,7 @@
 #include "fsd_common_msgs/ConeDetections.h"
 #include "cone_detector.hpp"
 #include "sensor_msgs/PointCloud2.h"
+#include "fssim_common/State.h"
 
 
 namespace ns_cone_detector {
@@ -55,10 +56,14 @@ class ConeDetectorHandle {
 
   ConeDetector coneDetector_;
   fsd_common_msgs::ConeDetections cone_detections_;
+  fssim_common::State car_state_;
 
   ros::Subscriber lidarSubscriber;
+  ros::Subscriber carPositionSubscriber;
   std::string lidar_topic_name_;
+  std::string car_positoin_topic_name_;
   void callbackRawLidar(const sensor_msgs::PointCloud2 &msg);
+  void callbackCarPosition(const fssim_common::State &state);
   fs_msgs::Cones cones_msg_;
 };
 }

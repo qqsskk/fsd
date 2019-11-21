@@ -50,6 +50,7 @@
 
 // typedef pcl::PointCloud<pcl::PointXYZ> CloudType;
 
+
 namespace ns_cone_detector {
     // Constructor
     ConeDetector::ConeDetector() {
@@ -59,8 +60,7 @@ namespace ns_cone_detector {
     fsd_common_msgs::ConeDetections ConeDetector::getConeDetections() const { return coneDetections_; }
     fs_msgs::Cones ConeDetector::getConeDetectionsMsg() const { return cones_detected_msg_; }
 
-    void ConeDetector::runAlgorithm(const sensor_msgs::PointCloud2 &msg) {
-
+    void ConeDetector::runAlgorithm(const sensor_msgs::PointCloud2 &msg, const fssim_common::State &state) {
       ROS_INFO("Point cloud message received" );
       
       // sensor_msgs::PointCloud2 raw_cloud_temp = msg;
@@ -83,8 +83,8 @@ namespace ns_cone_detector {
       std::cerr << "PointCloud SIZE: " << cloud_filtered->width * cloud_filtered->height << " data points." << std::endl;
 
       // Write the downsampled version to disk
-      pcl::PCDWriter writer;
-      writer.write<pcl::PointXYZ> ("table_scene_lms400_downsampled.pcd", *cloud_filtered, false);
+      // pcl::PCDWriter writer;
+      // writer.write<pcl::PointXYZ> ("table_scene_lms400_downsampled.pcd", *cloud_filtered, false);
 
       pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
       pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
@@ -121,9 +121,9 @@ namespace ns_cone_detector {
         extract.filter (*cloud_p);
         std::cerr << "PointCloud representing the planar component: " << cloud_p->width * cloud_p->height << " data points." << std::endl;
 
-        std::stringstream ss;
-        ss << "table_scene_lms400_plane_" << i << ".pcd";
-        writer.write<pcl::PointXYZ> (ss.str (), *cloud_p, false);
+        // std::stringstream ss;
+        // ss << "table_scene_lms400_plane_" << i << ".pcd";
+        // writer.write<pcl::PointXYZ> (ss.str (), *cloud_p, false);
 
         // Create the filtering object
         extract.setNegative (true);
@@ -144,6 +144,8 @@ namespace ns_cone_detector {
         cone.x = p.x;
         cone.y = p.y;
         cone.color = cone.UNDEFINED;
+        // TODO: how to decide ?
+        // 
         if(p.y > 0){
           cone.color = ("_left_color" == "yellow") ? cone.BLUE : cone.YELLOW;
         } else{

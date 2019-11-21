@@ -26,7 +26,7 @@
 
 #include <fs_msgs/Cones.h>
 #include "sensor_msgs/PointCloud2.h"
-
+#include "fssim_common/State.h"
 
 namespace ns_cone_detector {
 
@@ -48,7 +48,7 @@ namespace ns_cone_detector {
         /**
          * calls the other functions in the right order
          */
-        void runAlgorithm(const sensor_msgs::PointCloud2 &msg);
+        void runAlgorithm(const sensor_msgs::PointCloud2 &msg, const fssim_common::State &state);
 
     private:
 

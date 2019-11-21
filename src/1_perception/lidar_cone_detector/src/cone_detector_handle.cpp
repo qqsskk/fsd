@@ -56,12 +56,18 @@ void ConeDetectorHandle::loadParameters() {
 void ConeDetectorHandle::callbackRawLidar(const sensor_msgs::PointCloud2 &msg) {
   ROS_INFO("Lidar points callback");
   // lidar_point_cloud_ = msg;
-  coneDetector_.runAlgorithm(msg);
+  coneDetector_.runAlgorithm(msg, car_state_);
 }
+
+void ConeDetectorHandle::callbackCarPosition(const fssim_common::State &state) {
+  ROS_INFO("Car state callback in cone detection handle");
+  car_state_ = state;
+};
 
 void ConeDetectorHandle::subscribeToTopics() {
   ROS_INFO("subscribe to topics");
   lidarSubscriber = nodeHandle_.subscribe(lidar_topic_name_, 1, &ConeDetectorHandle::callbackRawLidar, this);
+  carPositionSubscriber = nodeHandle_.subscribe(car_positoin_topic_name_, 1, &ConeDetectorHandle::callbackCarPosition, this);
 }
 
 void ConeDetectorHandle::publishToTopics() {
